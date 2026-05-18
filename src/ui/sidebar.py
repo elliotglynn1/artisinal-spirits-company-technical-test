@@ -1,3 +1,5 @@
+import io
+
 import polars as pl
 import streamlit as st
 
@@ -11,6 +13,12 @@ def _get_api_key() -> str:
         placeholder="sk-ant-...",
         help="Never stored — lives only in your browser session.",
     )
+
+
+def _excel_bytes(df: pl.DataFrame) -> bytes:
+    buf = io.BytesIO()
+    df.to_pandas().to_excel(buf, index=False, engine="openpyxl")
+    return buf.getvalue()
 
 
 def render_sidebar(df: pl.DataFrame) -> tuple[Filters, str]:
@@ -42,11 +50,22 @@ def render_sidebar(df: pl.DataFrame) -> tuple[Filters, str]:
         st.markdown("### 🤖 AI Assistant")
         api_key = _get_api_key()
 
-    filters = Filters(
-        market=market,
-        distilleries=distilleries,
-        collection_types=collection_types,
-        age_min=age_range[0],
-        age_max=age_range[1],
-    )
+        st.divider()
+        st.markdown("### Export")
+        filters = Filters(
+            market=market,
+            distilleries=distilleries,
+            collection_types=collection_types,
+            age_min=age_range[0],
+            age_max=age_range[1],
+        )
+        filtered_df = filters.apply(df)
+        st.download_button(
+            label=f"Download filtered data ({len(filtered_df)} rows)",
+            data=_excel_bytes(filtered_df),
+            file_name="artisanal_spirits_pricing.xlsx",
+            mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+            use_container_width=True,
+        )
+
     return filters, api_key
