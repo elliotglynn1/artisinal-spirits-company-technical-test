@@ -219,3 +219,5 @@ __marimo__/
 
 # Local secrets
 secrets.json
+
+.DS_Store
