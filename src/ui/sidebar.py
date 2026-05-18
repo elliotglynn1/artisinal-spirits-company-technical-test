@@ -1,10 +1,16 @@
-from pathlib import Path
-
 import polars as pl
 import streamlit as st
 
-from src.config import DEFAULT_SECRETS_PATH
-from src.data.models import AppSecrets, Filters
+from src.data.models import Filters
+
+
+def _get_api_key() -> str:
+    return st.text_input(
+        "Anthropic API key",
+        type="password",
+        placeholder="sk-ant-...",
+        help="Never stored — lives only in your browser session.",
+    )
 
 
 def render_sidebar(df: pl.DataFrame) -> tuple[Filters, str]:
@@ -34,11 +40,7 @@ def render_sidebar(df: pl.DataFrame) -> tuple[Filters, str]:
 
         st.divider()
         st.markdown("### 🤖 AI Assistant")
-        secrets_path = st.text_input(
-            "Secrets JSON path",
-            placeholder="secrets.json",
-            value=str(DEFAULT_SECRETS_PATH),
-        )
+        api_key = _get_api_key()
 
     filters = Filters(
         market=market,
@@ -47,5 +49,4 @@ def render_sidebar(df: pl.DataFrame) -> tuple[Filters, str]:
         age_min=age_range[0],
         age_max=age_range[1],
     )
-    secrets = AppSecrets.load(Path(secrets_path.strip()).expanduser())
-    return filters, secrets.anthropic_api_key
+    return filters, api_key

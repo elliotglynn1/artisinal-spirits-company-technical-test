@@ -1,9 +1,6 @@
 from __future__ import annotations
 
-import json
-import os
-from dataclasses import dataclass, field
-from pathlib import Path
+from dataclasses import dataclass
 
 import polars as pl
 
@@ -44,22 +41,6 @@ class OverviewMetrics:
             avg_price_realisation=df["Pricing Realisation (%)"].mean() or 0.0,
             avg_margin_gap=(df["Realised Margin %"] - df["Planned Margin %"]).mean() or 0.0,
         )
-
-
-@dataclass
-class AppSecrets:
-    anthropic_api_key: str = ""
-
-    @classmethod
-    def load(cls, path: Path) -> AppSecrets:
-        try:
-            data = json.loads(path.read_text())
-            key = data.get("anthropic_api_key", "")
-            if key:
-                return cls(anthropic_api_key=key)
-        except Exception:
-            pass
-        return cls(anthropic_api_key=os.environ.get("ANTHROPIC_API_KEY", ""))
 
 
 @dataclass
