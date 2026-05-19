@@ -68,6 +68,50 @@ def price_realisation_by_distillery(df: pl.DataFrame) -> go.Figure:
     return fig
 
 
+# ── Profit & Revenue ─────────────────────────────────────────────────────────
+
+def revenue_vs_margin_scatter(df: pl.DataFrame) -> go.Figure:
+    data = (
+        df.group_by(["Distillery", "Distillery Group"])
+        .agg([
+            pl.col("Revenue (£)").sum().alias("Revenue (£)"),
+            pl.col("Realised Margin %").mean().round(1).alias("Realised Margin %"),
+            pl.col("Planned Margin %").mean().round(1).alias("Planned Margin %"),
+            pl.col("Bottles Sold").sum().alias("Bottles Sold"),
+        ])
+        .with_columns(
+            (pl.col("Realised Margin %") - pl.col("Planned Margin %"))
+            .round(1).alias("Margin Gap (pp)")
+        )
+        .to_pandas()
+    )
+    fig = px.scatter(
+        data,
+        x="Revenue (£)",
+        y="Realised Margin %",
+        size="Bottles Sold",
+        color="Distillery Group",
+        text="Distillery",
+        hover_data={"Planned Margin %": True, "Margin Gap (pp)": True,
+                    "Bottles Sold": True, "Distillery Group": False},
+        title="Revenue vs Realised Margin % by Distillery",
+        size_max=60,
+    )
+    fig.update_traces(textposition="top center", textfont_size=11)
+    fig.update_layout(
+        xaxis_tickprefix="£", xaxis_tickformat=",",
+        yaxis_title="Realised Margin %",
+        xaxis_title="Total Revenue (£)",
+    )
+    avg_rev = data["Revenue (£)"].mean()
+    avg_margin = data["Realised Margin %"].mean()
+    fig.add_vline(x=avg_rev, line_dash="dash", line_color="rgba(196,120,74,0.4)",
+                  annotation_text="Avg revenue", annotation_position="top right")
+    fig.add_hline(y=avg_margin, line_dash="dash", line_color="rgba(196,120,74,0.4)",
+                  annotation_text="Avg margin", annotation_position="top right")
+    return fig
+
+
 # ── Revenue ──────────────────────────────────────────────────────────────────
 
 def revenue_treemap(df: pl.DataFrame) -> go.Figure:

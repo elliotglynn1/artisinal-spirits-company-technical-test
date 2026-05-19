@@ -2,7 +2,6 @@ import streamlit as st
 import polars as pl
 
 from src.charts import overview as charts
-from src.charts import margins as margin_charts
 from src.data.models import OverviewMetrics
 
 _DATA_NOTES = """
@@ -51,8 +50,7 @@ def render(df: pl.DataFrame) -> None:
     c2.metric("Avg Realised Margin", f"{m.avg_realised_margin:.1f}%")
     c3.metric("Avg Margin Gap", f"{m.avg_margin_gap:+.1f} pp", delta_color="inverse")
 
-    st.plotly_chart(margin_charts.planned_vs_realised_by_distillery(df),
-                    use_container_width=True, key="overview_profit_margin")
+    st.plotly_chart(charts.revenue_vs_margin_scatter(df), use_container_width=True)
 
     st.divider()
 
