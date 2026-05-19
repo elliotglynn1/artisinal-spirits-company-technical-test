@@ -23,7 +23,7 @@ def _excel_bytes(df: pl.DataFrame) -> bytes:
 
 def render_sidebar(df: pl.DataFrame) -> tuple[Filters, str]:
     with st.sidebar:
-        st.markdown("## 🥃 Pricing Intelligence")
+        st.markdown("## Pricing Intelligence")
         st.caption("Artisanal Spirits Company")
         st.divider()
 
@@ -47,7 +47,7 @@ def render_sidebar(df: pl.DataFrame) -> tuple[Filters, str]:
         age_range = st.slider("Age (years)", age_lo, age_hi, (age_lo, age_hi))
 
         st.divider()
-        st.markdown("### 🤖 AI Assistant")
+        st.markdown("### AI Assistant")
         api_key = _get_api_key()
 
         st.divider()
