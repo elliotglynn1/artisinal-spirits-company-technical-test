@@ -19,8 +19,7 @@ def render(df: pl.DataFrame, api_key: str) -> None:
 
     if not api_key:
         st.warning(
-            "Add your Anthropic API key to the secrets JSON file (or set ANTHROPIC_API_KEY) to activate this tab.",
-            icon="🔑",
+            "Add your Anthropic API key to the sidebar to activate this tab.",
         )
         return
 

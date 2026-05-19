@@ -113,7 +113,7 @@ filters, api_key = render_sidebar(df_raw)
 df = filters.apply(df_raw)
 
 t1, t2, t3, t4, t5 = st.tabs([
-    "📊 Overview", "💰 Pricing", "📦 Volume & Revenue", "📈 Margins", "🤖 AI Assistant"
+    "Overview", "Pricing", "Volume & Revenue", "Margins", "AI Assistant"
 ])
 
 with t1: overview.render(df)
